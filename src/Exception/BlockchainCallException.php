@@ -1,15 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: stefan.balea
- * Date: 2/16/2018
- * Time: 11:57 PM
- */
-
 namespace BTCZ\Insight\Exception;
 
-
-class BlockchainCallException
+class BlockchainCallException extends \Exception
 {
-
+    public function __construct($message = "Blockchain call exception.", $code = 0)
+    {
+        parent::__construct($message, $code);
+    }
 }

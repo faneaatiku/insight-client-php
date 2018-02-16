@@ -1,7 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: stefan.balea
- * Date: 2/16/2018
- * Time: 11:48 PM
- */
+namespace BTCZ\Insight\Exception;
+
+class InvalidArgumentException extends \Exception
+{
+    public function __construct($message = "Invalid insight argument", $code = 0, Throwable $previous = null)
+    {
+        parent::__construct($message, $code, $previous);
+    }
+}
