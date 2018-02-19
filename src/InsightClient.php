@@ -36,10 +36,10 @@ class InsightClient
       }
 
     /**
-     * @param $hash
-     * @return mixed
+     * @param string $hash
+     * @return array
      */
-    public function getBlock(string $hash)
+    public function getBlock(string $hash) : array
     {
         if (!$hash) {
             $this->onInvalidArgument('Block hash parameter is required');
@@ -49,10 +49,10 @@ class InsightClient
     }
 
     /**
-     * @param $index
-     * @return mixed
+     * @param int $index
+     * @return array
      */
-    public function getBlockByHeight($index)
+    public function getBlockByHeight(int $index) : array
     {
         if (!$index) {
             $this->onInvalidArgument('Block index parameter is required');
@@ -66,9 +66,9 @@ class InsightClient
     /**
      * @param null $date
      * @param int $limit
-     * @return mixed
+     * @return array
      */
-    public function getBlockSummaries($date = null, $limit = 100)
+    public function getBlockSummaries($date = null, $limit = 100) : array
     {
         $queryParams = [
             'limit' => $limit
@@ -82,10 +82,9 @@ class InsightClient
     }
 
     /**
-     * @return mixed
-     * @throws \Error
+     * @return string
      */
-    public function getCurrency()
+    public function getCurrency() : string
     {
         $response = $this->sendGet('/currency');
 
@@ -93,10 +92,10 @@ class InsightClient
     }
 
     /**
-     * @param $hash
-     * @return mixed
+     * @param string $hash
+     * @return array
      */
-    public function getRawBlock(string $hash)
+    public function getRawBlock(string $hash) : array
     {
         if (!$hash) {
             $this->onInvalidArgument('Block hash parameter is required');
@@ -109,9 +108,9 @@ class InsightClient
 
     /**
      * @param $index
-     * @return mixed
+     * @return array
      */
-    public function getRawBlockByHeight($index)
+    public function getRawBlockByHeight($index) : array
     {
         if (!$index) {
             $this->onInvalidArgument('Block index parameter is required');
@@ -123,10 +122,10 @@ class InsightClient
     }
 
     /**
-     * @param $transactionId
-     * @return mixed
+     * @param string $transactionId
+     * @return array
      */
-    public function getTransaction(string $transactionId)
+    public function getTransaction(string $transactionId) : array
     {
         if (!$transactionId) {
             $this->onInvalidArgument('Transaction Id parameter is required');
@@ -136,10 +135,10 @@ class InsightClient
     }
 
     /**
-     * @param $transactionId
-     * @return mixed
+     * @param string $transactionId
+     * @return array
      */
-    public function getRawTransaction(string $transactionId)
+    public function getRawTransaction(string $transactionId) : array
     {
         if (!$transactionId) {
             $this->onInvalidArgument('Transaction Id parameter is required');
@@ -149,13 +148,13 @@ class InsightClient
     }
 
     /**
-     * @param $address
+     * @param string $address
      * @param bool $noTxList
      * @param int $fromTx
      * @param int $toTx
-     * @return mixed
+     * @return array
      */
-    public function getAddress(string $address, $noTxList = false, $fromTx = 0, $toTx = 1000)
+    public function getAddress(string $address, $noTxList = false, $fromTx = 0, $toTx = 1000) : array
     {
         if (!$address) {
             $this->onInvalidArgument('Address is required');
@@ -172,11 +171,12 @@ class InsightClient
 
     /**
      * The response contains the value in Satoshis.
-     * @param $address
-     * @param $property
-     * @return mixed
+     *
+     * @param string $address
+     * @param string $property
+     * @return array
      */
-    public function getAddressProperty(string $address, string $property)
+    public function getAddressProperty(string $address, string $property) : array
     {
         if (!$address || !$property) {
             $this->onInvalidArgument('`address` and `property` arguments are required');
@@ -187,10 +187,10 @@ class InsightClient
 
     /**
      * The response contains the value in Satoshis.
-     * @param $address
-     * @return mixed
+     * @param string $address
+     * @return array
      */
-    public function getAddressBalanceInSatoshi(string $address)
+    public function getAddressBalanceInSatoshi(string $address) : array
     {
         return $this->getAddressProperty($address, 'balance');
     }
@@ -198,38 +198,38 @@ class InsightClient
     /**
      * The response contains the value in Satoshis.
      * @param $address
-     * @return mixed
+     * @return array
      */
-    public function getAddressTotalReceivedInSatoshi($address)
+    public function getAddressTotalReceivedInSatoshi($address) : array
     {
         return $this->getAddressProperty($address, 'totalReceived');
     }
 
     /**
      * The response contains the value in Satoshis.
-     * @param $address
-     * @return mixed
+     * @param string $address
+     * @return array
      */
-    public function getAddressTotalSentInSatoshi(string $address)
+    public function getAddressTotalSentInSatoshi(string $address) : array
     {
         return $this->getAddressProperty($address, 'totalSent');
     }
 
     /**
      * The response contains the value in Satoshis.
-     * @param $address
-     * @return mixed
+     * @param string $address
+     * @return array
      */
-    public function getAddressUnconfirmedBalanceInSatoshi(string $address)
+    public function getAddressUnconfirmedBalanceInSatoshi(string $address) : array
     {
         return $this->getAddressProperty($address, 'unconfirmedBalance');
     }
 
     /**
-     * @param $address
-     * @return mixed
+     * @param string $address
+     * @return array
      */
-    public function getAddressUnspentOutputs(string $address)
+    public function getAddressUnspentOutputs(string $address) : array
     {
         if (!$address) {
             $this->onInvalidArgument('Address argument is required ot get unspent outputs');
@@ -240,9 +240,9 @@ class InsightClient
 
     /**
      * @param array $addresses
-     * @return mixed
+     * @return array
      */
-    public function getMultipleAddressesUnspentOutputs(array $addresses)
+    public function getMultipleAddressesUnspentOutputs(array $addresses) : array
     {
         if (empty($addresses) || !is_array($addresses)) {
             $this->onInvalidArgument('Argument `addresses` is not an array of addresses.');
@@ -252,11 +252,11 @@ class InsightClient
     }
 
     /**
-     * @param $option
-     * @param $argument
-     * @return mixed
+     * @param string $option
+     * @param string $argument
+     * @return array
      */
-    public function getTransactions(string $option, string $argument)
+    public function getTransactions(string $option, string $argument) : array
     {
         if (!in_array($option, self::$transactionQueryAllowedOptions, true)) {
             $this->onInvalidArgument(
@@ -280,19 +280,19 @@ class InsightClient
     }
 
     /**
-     * @param $hash
-     * @return mixed
+     * @param string $hash
+     * @return array
      */
-    public function getTransactionsByBlock(string $hash)
+    public function getTransactionsByBlock(string $hash) : array
     {
         return $this->getTransactions(self::BLOCK_STRING, $hash);
     }
 
     /**
-     * @param $address
-     * @return mixed
+     * @param string $address
+     * @return array
      */
-    public function getTransactionsByAddress(string $address)
+    public function getTransactionsByAddress(string $address) : array
     {
         return $this->getTransactions(self::ADDRESS_STRING, $address);
     }
@@ -301,13 +301,12 @@ class InsightClient
      * Will ignore `from` and `to` params if one of them is null.
      * If pagination params are not specified, the result is an array of transactions. otherwise it will return
      * pagination details and all transactions under `items` key.
-     *
      * @param array $addresses
      * @param null $from
      * @param null $to
-     * @return mixed
+     * @return array
      */
-    public function getTransactionsForMultipleAddresses(array $addresses, $from = null, $to = null)
+    public function getTransactionsForMultipleAddresses(array $addresses, $from = null, $to = null) : array
     {
         if (empty($addresses) || !is_array($addresses)) {
             $this->onInvalidArgument('Argument `addresses` is not an array of addresses.');
@@ -323,12 +322,12 @@ class InsightClient
     }
 
     /**
-     * @param $url
+     * @param string $url
      * @param array $query
-     * @return mixed
+     * @return array
      * @throws BlockchainCallException
      */
-    public function sendGet(string $url, array $query = [])
+    public function sendGet(string $url, array $query = []) : array
     {
         $response = $this->client->request(
             'GET',
@@ -357,12 +356,20 @@ class InsightClient
 
     /**
      * @param bool $exceptionOnNotOkResponse
-     * @return $this
+     * @return InsightClient
      */
-    public function setExceptionOnNotOkResponse(bool $exceptionOnNotOkResponse)
+    public function setExceptionOnNotOkResponse(bool $exceptionOnNotOkResponse) : InsightClient
     {
         $this->exceptionOnNotOkResponse = (bool)$exceptionOnNotOkResponse;
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getExceptionOnNotOkResponse() : bool
+    {
+        return $this->exceptionOnNotOkResponse;
     }
 }
