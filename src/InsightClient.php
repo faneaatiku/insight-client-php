@@ -12,8 +12,8 @@ class InsightClient
     /** @var Client $client */
     private $client;
 
-    /** @var  bool $exceptionOnNotOkResponse */
-    private $exceptionOnNotOkResponse;
+    /** @var  bool $throwExceptionOnNotOkResponse */
+    private $throwExceptionOnNotOkResponse;
 
     protected static $transactionQueryAllowedOptions = [self::ADDRESS_STRING, self::BLOCK_STRING];
 
@@ -23,11 +23,11 @@ class InsightClient
      * @param null $handler
      * @param bool $exceptionOnNotOkResponse
      */
-    public function __construct($base_uri, $handler = null, $exceptionOnNotOkResponse = true)
+    public function __construct(string $base_uri, $handler = null, bool $exceptionOnNotOkResponse = true)
     {
-        $this->setExceptionOnNotOkResponse($exceptionOnNotOkResponse);
+        $this->setThrowExceptionOnNotOkResponse($exceptionOnNotOkResponse);
 
-        $options = ['base_uri' => $base_uri];
+        $options = ['base_uri' => $base_uri, 'http_errors'     => false,];
         if (null !== $handler) {
             $options['handler'] = $handler;
         }
@@ -54,7 +54,7 @@ class InsightClient
      */
     public function getBlockByHeight(int $index) : array
     {
-        if (!$index) {
+        if ($index < 0) {
             $this->onInvalidArgument('Block index parameter is required');
         }
 
@@ -93,9 +93,9 @@ class InsightClient
 
     /**
      * @param string $hash
-     * @return array
+     * @return string
      */
-    public function getRawBlock(string $hash) : array
+    public function getRawBlock(string $hash) : string
     {
         if (!$hash) {
             $this->onInvalidArgument('Block hash parameter is required');
@@ -108,11 +108,11 @@ class InsightClient
 
     /**
      * @param $index
-     * @return array
+     * @return string
      */
-    public function getRawBlockByHeight($index) : array
+    public function getRawBlockByHeight(int $index) : string
     {
-        if (!$index) {
+        if ($index < 0) {
             $this->onInvalidArgument('Block index parameter is required');
         }
 
@@ -174,9 +174,9 @@ class InsightClient
      *
      * @param string $address
      * @param string $property
-     * @return array
+     * @return int
      */
-    public function getAddressProperty(string $address, string $property) : array
+    public function getAddressProperty(string $address, string $property) : int
     {
         if (!$address || !$property) {
             $this->onInvalidArgument('`address` and `property` arguments are required');
@@ -188,9 +188,9 @@ class InsightClient
     /**
      * The response contains the value in Satoshis.
      * @param string $address
-     * @return array
+     * @return int
      */
-    public function getAddressBalanceInSatoshi(string $address) : array
+    public function getAddressBalanceInSatoshi(string $address) : int
     {
         return $this->getAddressProperty($address, 'balance');
     }
@@ -198,9 +198,9 @@ class InsightClient
     /**
      * The response contains the value in Satoshis.
      * @param $address
-     * @return array
+     * @return int
      */
-    public function getAddressTotalReceivedInSatoshi($address) : array
+    public function getAddressTotalReceivedInSatoshi($address) : int
     {
         return $this->getAddressProperty($address, 'totalReceived');
     }
@@ -208,9 +208,9 @@ class InsightClient
     /**
      * The response contains the value in Satoshis.
      * @param string $address
-     * @return array
+     * @return int
      */
-    public function getAddressTotalSentInSatoshi(string $address) : array
+    public function getAddressTotalSentInSatoshi(string $address)
     {
         return $this->getAddressProperty($address, 'totalSent');
     }
@@ -218,18 +218,18 @@ class InsightClient
     /**
      * The response contains the value in Satoshis.
      * @param string $address
-     * @return array
+     * @return int
      */
-    public function getAddressUnconfirmedBalanceInSatoshi(string $address) : array
+    public function getAddressUnconfirmedBalanceInSatoshi(string $address)
     {
         return $this->getAddressProperty($address, 'unconfirmedBalance');
     }
 
     /**
      * @param string $address
-     * @return array
+     * @return int
      */
-    public function getAddressUnspentOutputs(string $address) : array
+    public function getAddressUnspentOutputs(string $address)
     {
         if (!$address) {
             $this->onInvalidArgument('Address argument is required ot get unspent outputs');
@@ -324,10 +324,10 @@ class InsightClient
     /**
      * @param string $url
      * @param array $query
-     * @return array
+     * @return array|int
      * @throws BlockchainCallException
      */
-    public function sendGet(string $url, array $query = []) : array
+    public function sendGet(string $url, array $query = [])
     {
         $response = $this->client->request(
             'GET',
@@ -336,8 +336,8 @@ class InsightClient
         );
 
         $code = $response->getStatusCode();
-        if ($code !== 200 && true === $this->exceptionOnNotOkResponse) {
-            throw new BlockchainCallException($response->getBody(), $response->getStatusCode());
+        if (true === $this->shouldThrowExceptionOnNotOkResponse() && ($code < 200 || $code > 299)) {
+            throw new BlockchainCallException();
         }
 
         $body = $response->getBody();
@@ -355,12 +355,12 @@ class InsightClient
     }
 
     /**
-     * @param bool $exceptionOnNotOkResponse
+     * @param bool $throwExceptionOnNotOkResponse
      * @return InsightClient
      */
-    public function setExceptionOnNotOkResponse(bool $exceptionOnNotOkResponse) : InsightClient
+    public function setThrowExceptionOnNotOkResponse(bool $throwExceptionOnNotOkResponse) : InsightClient
     {
-        $this->exceptionOnNotOkResponse = (bool)$exceptionOnNotOkResponse;
+        $this->throwExceptionOnNotOkResponse = (bool)$throwExceptionOnNotOkResponse;
 
         return $this;
     }
@@ -368,8 +368,8 @@ class InsightClient
     /**
      * @return bool
      */
-    public function getExceptionOnNotOkResponse() : bool
+    public function shouldThrowExceptionOnNotOkResponse() : bool
     {
-        return $this->exceptionOnNotOkResponse;
+        return $this->throwExceptionOnNotOkResponse;
     }
 }
